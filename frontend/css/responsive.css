@@ -1,0 +1,60 @@
+@media(max-width:992px){
+
+.hero{
+
+text-align:center;
+
+padding-top:120px;
+
+}
+
+.hero h1{
+
+font-size:45px;
+
+}
+
+.ai-card{
+
+margin-top:50px;
+
+}
+
+}
+
+@media(max-width:768px){
+
+.hero h1{
+
+font-size:36px;
+
+}
+
+.tech-stack{
+
+gap:10px;
+
+}
+
+.tech-stack span{
+
+font-size:14px;
+
+padding:10px 16px;
+
+}
+
+.feature-card{
+
+padding:30px 20px;
+
+}
+
+.btn-lg{
+
+width:100%;
+margin-top:15px;
+
+}
+
+}
