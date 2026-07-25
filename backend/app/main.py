@@ -1,22 +1,21 @@
 from fastapi import FastAPI
+from pydantic import BaseModel
 
-app = FastAPI(
-    title="NAYAN API",
-    description="AI-powered Voice Assistant for Visually Impaired Students",
-    version="1.0.0"
-)
+from app.services.pipeline import ask_question
+
+app = FastAPI(title="NAYAN API")
+
+
+class QuestionRequest(BaseModel):
+    question: str
 
 
 @app.get("/")
 def home():
-    return {
-        "message": "Welcome to NAYAN API 🚀"
-    }
+    return {"message": "Welcome to NAYAN"}
 
 
-@app.get("/health")
-def health():
-    return {
-        "status": "healthy",
-        "service": "NAYAN Backend"
-    }
+@app.post("/ask")
+def ask(request: QuestionRequest):
+    result = ask_question(request.question)
+    return result
