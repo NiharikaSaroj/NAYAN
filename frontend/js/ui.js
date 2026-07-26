@@ -51,9 +51,7 @@ function showTyping() {
     const chat = document.getElementById("chatMessages");
 
     chat.innerHTML += `
-    <div
-        class="ai-message"
-        id="typing">
+    <div class="ai-message" id="typing">
 
         <div class="message-avatar">
             🤖
@@ -61,9 +59,16 @@ function showTyping() {
 
         <div class="message-content">
 
-            <div class="spinner-border spinner-border-sm text-primary"></div>
+            <h6>NAYAN</h6>
 
-            Thinking...
+            <p>
+                NAYAN is thinking
+                <span class="typing-dots">
+                    <span>.</span>
+                    <span>.</span>
+                    <span>.</span>
+                </span>
+            </p>
 
         </div>
 
@@ -71,7 +76,6 @@ function showTyping() {
     `;
 
     scrollToBottom();
-
 }
 
 function removeTyping() {
