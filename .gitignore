@@ -233,3 +233,14 @@ __pycache__/
 # OS
 .DS_Store
 Thumbs.db
+
+# ======================
+# NAYAN Voice Engine
+# ======================
+
+# Generated audio files
+voice_engine/*.wav
+
+# Large AI voice models
+voice_engine/*.onnx
+voice_engine/*.onnx.json

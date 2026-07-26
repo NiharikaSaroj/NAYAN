@@ -1,40 +1,5 @@
 const input = document.getElementById("userInput");
 const sendBtn = document.getElementById("sendBtn");
-const chatMessages = document.getElementById("chatMessages");
-
-
-function addMessage(message, sender){
-
-    const wrapper = document.createElement("div");
-
-    wrapper.className =
-        sender === "user"
-        ? "user-message"
-        : "ai-message";
-
-
-    wrapper.innerHTML = `
-
-        <div class="message-avatar">
-            ${sender === "user" ? "👤" : "🤖"}
-        </div>
-
-
-        <div class="message-content">
-            ${message}
-        </div>
-
-    `;
-
-
-    chatMessages.appendChild(wrapper);
-
-
-    chatMessages.scrollTop =
-        chatMessages.scrollHeight;
-
-}
-
 
 
 async function sendMessage(){
@@ -46,32 +11,45 @@ async function sendMessage(){
         return;
 
 
-    addMessage(message,"user");
+    // Show user message
+    addUserMessage(message);
 
 
-    input.value="";
+    input.value = "";
 
 
-    // Temporary AI response
-    setTimeout(()=>{
+    try {
+
+        // Show NAYAN thinking
+        showTyping();
 
 
-        addMessage(
-        `
-        I understand your question 😊
+        // Call backend
+        const answer = await askNayan(message);
 
-        This is a demo response from NAYAN.
 
-        Soon I will answer using NCERT knowledge,
-        RAG and AI models.
-        `,
-        "ai"
+        // Remove thinking
+        removeTyping();
+
+
+        // Show AI answer
+        addAIMessage(answer);
+
+
+    }
+    catch(error){
+
+        console.error(error);
+
+
+        removeTyping();
+
+
+        addAIMessage(
+            "Sorry, I could not connect to NAYAN backend."
         );
 
-
-    },800);
-
-
+    }
 
 }
 
@@ -88,7 +66,7 @@ input.addEventListener(
     "keypress",
     function(e){
 
-        if(e.key==="Enter")
+        if(e.key === "Enter")
             sendMessage();
 
     }

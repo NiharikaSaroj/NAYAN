@@ -89,6 +89,8 @@ Sight Beyond Vision
 
 <div class="chat-messages" id="chatMessages">
 
+<div id="assistantStatus" class="assistant-status"></div>
+
 
 <div class="ai-message">
 
@@ -212,7 +214,12 @@ id="sendBtn">
 
 
 <script src="js/api.js"></script>
+<script src="js/ui.js"></script>
 <script src="js/chat.js"></script>
+
+<script>
+console.log(window.electronAPI.testMic());
+</script>
 
 
 </body>
