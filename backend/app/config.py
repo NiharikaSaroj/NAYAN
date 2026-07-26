@@ -23,7 +23,34 @@ EMBEDDING_MODEL = "sentence-transformers/all-MiniLM-L6-v2"
 LLM_MODEL = "models/gemini-flash-latest"
 
 # =====================================
+# Retrieval
+# =====================================
+
+TOP_K = 5
+
+# =====================================
+# Chunking
+# =====================================
+
+CHUNK_SIZE = 500
+CHUNK_OVERLAP = 100
+
+# =====================================
+# API
+# =====================================
+
+MAX_QUESTION_LENGTH = 500
+
+# =====================================
+# Logging
+# =====================================
+
+LOG_LEVEL = "INFO"
+# =====================================
 # Retrieval Settings
 # =====================================
 
 TOP_K = 5
+
+# Minimum similarity score required
+SIMILARITY_THRESHOLD = 0.45

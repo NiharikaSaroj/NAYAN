@@ -1,15 +1,22 @@
 import faiss
 import numpy as np
 import pickle
-from pathlib import Path
 
-VECTOR_STORE = Path("vector_store")
+from app.config import VECTOR_STORE, FAISS_INDEX_PATH, CHUNKS_PATH
+
 VECTOR_STORE.mkdir(exist_ok=True)
 
-def save_index(embeddings, chunks):
-    embeddings = np.array(embeddings).astype("float32")
 
-    # Normalize embeddings for cosine similarity
+def save_index(embeddings: np.ndarray, chunks: list[dict]) -> None:
+    """
+    Save embeddings and metadata into the FAISS vector store.
+    """
+
+    embeddings = np.asarray(embeddings, dtype="float32")
+
+    if embeddings.size == 0:
+        raise ValueError("No embeddings available to create FAISS index.")
+
     faiss.normalize_L2(embeddings)
 
     dimension = embeddings.shape[1]
@@ -17,9 +24,9 @@ def save_index(embeddings, chunks):
     index = faiss.IndexFlatIP(dimension)
     index.add(embeddings)
 
-    faiss.write_index(index, str(VECTOR_STORE / "index.faiss"))
+    faiss.write_index(index, str(FAISS_INDEX_PATH))
 
-    with open(VECTOR_STORE / "metadata.pkl", "wb") as f:
+    with open(CHUNKS_PATH, "wb") as f:
         pickle.dump(chunks, f)
 
-    print("✅ FAISS index saved.")
+    print(f"✅ Saved {len(chunks)} chunks to FAISS.")

@@ -3,7 +3,8 @@ import re
 
 def clean_text(text: str) -> str:
     """
-    Clean extracted PDF text while preserving meaning.
+    Clean extracted PDF text by removing unnecessary whitespace
+    while preserving the original content.
     """
 
     # Remove extra spaces
