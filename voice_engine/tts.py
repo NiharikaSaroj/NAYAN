@@ -33,11 +33,16 @@ def text_to_speech(text):
     process = subprocess.Popen(
         command,
         stdin=subprocess.PIPE,
-        text=True
+        text=True,
+        encoding="utf-8"
     )
 
 
-    process.communicate(text)
+    process.communicate(text.encode("utf-8").decode("utf-8"))
+
+    if process.returncode != 0:
+        print("Piper failed")
+        return
 
 
     print("Generated:", output_file)
