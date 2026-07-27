@@ -10,8 +10,10 @@ CHUNK_SIZE = 1280
 
 WAKEWORD = "hey_jarvis"
 
-THRESHOLD = 0.35
-REQUIRED_DETECTIONS = 2
+THRESHOLD = 0.40
+REQUIRED_DETECTIONS = 3
+
+WAKEWORD_COOLDOWN = 2
 
 
 model = Model(
@@ -33,12 +35,16 @@ def wait_for_wakeword():
 
         nonlocal detection_count, detected
 
+
         if status:
+
             if "overflow" in str(status):
                 return
 
 
+
         audio = indata[:, 0]
+
 
         audio = (audio * 32767).astype(np.int16)
 
@@ -49,21 +55,29 @@ def wait_for_wakeword():
         score = prediction.get(WAKEWORD, 0)
 
 
+
         if score > THRESHOLD:
+
             detection_count += 1
+
         else:
+
             detection_count = 0
 
 
+
         if detection_count >= REQUIRED_DETECTIONS:
+
 
             print("\n====================")
             print("NAYAN activated!")
             print(f"Confidence: {score:.3f}")
             print("====================\n")
 
+
             detected = True
             detection_count = 0
+
 
 
 
@@ -75,8 +89,21 @@ def wait_for_wakeword():
         callback=audio_callback
     ):
 
+
         while not detected:
+
             time.sleep(0.1)
 
 
+
+    # Prevent immediate re-triggering
+    time.sleep(WAKEWORD_COOLDOWN)
+
+
     return True
+
+
+
+if __name__ == "__main__":
+
+    wait_for_wakeword()
