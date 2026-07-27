@@ -233,6 +233,28 @@ __pycache__/
 # OS
 .DS_Store
 Thumbs.db
+# ==========================
+# NAYAN Project
+# ==========================
+
+# Generated audio files
+*.wav
+*.mp3
+
+# FFmpeg temporary files
+*.aac
+
+# Hugging Face cache (if created inside project)
+huggingface/
+
+# Python model cache (optional)
+models/
+
+# VS Code
+.vscode/
+
+# Vector store (ignore only if you DON'T want to upload it)
+# vector_store/
 
 # ======================
 # NAYAN Voice Engine

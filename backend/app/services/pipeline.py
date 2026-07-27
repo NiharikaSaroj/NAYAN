@@ -1,9 +1,9 @@
 from rag.retriever import search
-from rag.llm import generate_answer
+from rag.llm import generate_answer, generate_general_answer
 from rag.quiz import generate_quiz
 
 
-def ask_question(question: str):
+def ask_question(question: str) -> dict:
     """
     Main backend pipeline.
 
@@ -20,10 +20,26 @@ def ask_question(question: str):
     # Retrieve relevant chunks
     results = search(question)
 
-    # Build context for Gemini
+    # If no relevant NCERT chunks are found,
+    # answer using Gemini's general knowledge.
+    if not results:
+
+        answer = generate_general_answer(question)
+
+        return {
+            "answer": answer,
+            "sources": [
+                {
+                    "chapter": "General Knowledge",
+                    "score": None
+                }
+            ]
+        }
+
+    # Build context from NCERT
     context = "\n\n".join(chunk["text"] for chunk in results)
 
-    # Generate answer
+    # Generate answer using RAG
     answer = generate_answer(question, context)
 
     # Prepare source information
@@ -50,14 +66,20 @@ def ask_question(question: str):
     }
 
 
-def generate_quiz_from_question(question: str):
+def generate_quiz_from_question(question: str) -> dict:
 
     results = search(question)
 
-    context = "\n\n".join([r["text"] for r in results])
+    if not results:
+        return {
+            "quiz": [],
+            "sources": ["General Knowledge"],
+            "message": "Quiz generation is available only for topics found in the NCERT knowledge base."
+        }
+
+    context = "\n\n".join(r["text"] for r in results)
 
     quiz = generate_quiz(context)
-
     return {
         "quiz": quiz["quiz"],
         "sources": list(set([r["source"] for r in results]))
