@@ -255,3 +255,14 @@ models/
 
 # Vector store (ignore only if you DON'T want to upload it)
 # vector_store/
+
+# ======================
+# NAYAN Voice Engine
+# ======================
+
+# Generated audio files
+voice_engine/*.wav
+
+# Large AI voice models
+voice_engine/*.onnx
+voice_engine/*.onnx.json
