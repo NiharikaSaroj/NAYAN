@@ -1,24 +1,38 @@
 import subprocess
 import sounddevice as sd
 import soundfile as sf
+import os
+import re
 
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
-MODEL = "en_US-lessac-medium.onnx"
+MODEL = os.path.join(
+    BASE_DIR,
+    "en_US-lessac-medium.onnx"
+)
 
 
 def play_audio(filename):
 
     audio, samplerate = sf.read(filename)
 
-    sd.play(audio, samplerate)
+    sd.play(
+        audio,
+        samplerate
+    )
 
     sd.wait()
 
 
 
 def text_to_speech(text):
+    # Remove markdown symbols for speech
+    text = re.sub(r'[*_#`]', '', text)
 
-    output_file = "response.wav"
+    output_file = os.path.join(
+        BASE_DIR,
+        "response.wav"
+    )
 
 
     command = [
@@ -38,9 +52,11 @@ def text_to_speech(text):
     )
 
 
-    process.communicate(text.encode("utf-8").decode("utf-8"))
+    process.communicate(text)
+
 
     if process.returncode != 0:
+
         print("Piper failed")
         return
 
@@ -48,7 +64,6 @@ def text_to_speech(text):
     print("Generated:", output_file)
 
 
-    # Play voice automatically
     play_audio(output_file)
 
 

@@ -83,7 +83,23 @@ Sight Beyond Vision
 
 </div>
 
+<div id="assistantStatus" class="assistant-status listening">
 
+    <div class="status-icon" id="statusIcon">
+        🎤
+    </div>
+
+    <div class="status-text">
+
+        <h6 id="statusTitle">Listening...</h6>
+
+        <small id="statusSubtitle">
+            I'm ready for your question.
+        </small>
+
+    </div>
+
+</div>
 
 <!-- MESSAGES -->
 
@@ -111,12 +127,12 @@ Hello 👋
 
 
 <p>
-I'm NAYAN, your AI learning assistant.
+Hello, I'm listening
 </p>
 
 
 <p>
-Ask me anything about NCERT Class 6 Science.
+How can I help you?
 </p>
 
 
@@ -146,7 +162,9 @@ Ask me anything about NCERT Class 6 Science.
 <div class="chat-input-area">
 
 
-<button class="btn btn-primary mic-btn">
+<button
+    class="btn btn-primary mic-btn"
+    id="micBtn">
 
 <i class="bi bi-mic-fill"></i>
 
