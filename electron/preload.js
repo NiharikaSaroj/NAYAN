@@ -1,9 +1,11 @@
-const { contextBridge } = require("electron");
+const { contextBridge, ipcRenderer } = require("electron");
 
 contextBridge.exposeInMainWorld(
     "electronAPI",
     {
+
         appName: "NAYAN",
+
         version: "1.0",
 
         testMic: async () => {
@@ -14,18 +16,29 @@ contextBridge.exposeInMainWorld(
                     audio: true
                 });
 
-                stream.getTracks().forEach(
-                    track => track.stop()
-                );
+                stream.getTracks().forEach(track => track.stop());
 
                 return "Microphone access granted";
 
-            } catch(error) {
+            } catch (error) {
 
                 return "Microphone access denied: " + error.message;
 
             }
 
+        },
+
+        startVoiceChat: () =>
+            ipcRenderer.invoke("start-voice-chat"),
+
+        onVoiceMessage(callback) {
+
+            ipcRenderer.on(
+                "voice-message",
+                (event, data) => callback(data)
+            );
+
         }
+
     }
 );

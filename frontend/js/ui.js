@@ -46,7 +46,11 @@ function addAIMessage(text) {
 
 }
 
+
 function showTyping() {
+
+    if (document.getElementById("typing"))
+        return;
 
     const chat = document.getElementById("chatMessages");
 
@@ -76,21 +80,36 @@ function showTyping() {
     `;
 
     scrollToBottom();
+
 }
 
 function removeTyping() {
 
-    const typing = document.getElementById("typing");
+    const typing =
+        document.getElementById("typing");
 
-    if (typing)
+    if (typing) {
         typing.remove();
+    }
+
+    scrollToBottom();
 
 }
 
 function scrollToBottom() {
 
-    const chat = document.getElementById("chatMessages");
+    const chat =
+        document.getElementById("chatMessages");
 
-    chat.scrollTop = chat.scrollHeight;
+    if (!chat)
+        return;
+
+    chat.scrollTo({
+
+        top: chat.scrollHeight,
+
+        behavior: "smooth"
+
+    });
 
 }

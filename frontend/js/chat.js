@@ -1,73 +1,181 @@
 const input = document.getElementById("userInput");
 const sendBtn = document.getElementById("sendBtn");
+const micBtn = document.getElementById("micBtn");
 
+const assistantStatus =
+    document.getElementById("assistantStatus");
 
-async function sendMessage(){
+const statusIcon =
+    document.getElementById("statusIcon");
 
-    const message = input.value.trim();
+const statusTitle =
+    document.getElementById("statusTitle");
 
+const statusSubtitle =
+    document.getElementById("statusSubtitle");
 
-    if(message === "")
-        return;
+function setAssistantState(state) {
 
+    assistantStatus.className =
+        "assistant-status " + state;
 
-    // Show user message
-    addUserMessage(message);
+    switch (state) {
 
+        case "listening":
 
-    input.value = "";
+            statusIcon.innerHTML = "🎤";
 
+            statusTitle.innerHTML = "Listening...";
 
-    try {
+            statusSubtitle.innerHTML =
+                "I'm ready for your question.";
 
-        // Show NAYAN thinking
-        showTyping();
+            break;
 
+        case "thinking":
 
-        // Call backend
-        const answer = await askNayan(message);
+            statusIcon.innerHTML = "🧠";
 
+            statusTitle.innerHTML = "Thinking...";
 
-        // Remove thinking
-        removeTyping();
+            statusSubtitle.innerHTML =
+                "Let me find the best answer.";
 
+            break;
 
-        // Show AI answer
-        addAIMessage(answer);
+        case "speaking":
 
+            statusIcon.innerHTML = "🔊";
 
-    }
-    catch(error){
+            statusTitle.innerHTML = "Speaking...";
 
-        console.error(error);
+            statusSubtitle.innerHTML =
+                "Here's what I found.";
 
+            break;
 
-        removeTyping();
+        case "idle":
 
+            statusIcon.innerHTML = "💤";
 
-        addAIMessage(
-            "Sorry, I could not connect to NAYAN backend."
-        );
+            statusTitle.innerHTML = "Ready";
+
+            statusSubtitle.innerHTML =
+                "Click the microphone or say Hey Jarvis.";
+
+            break;
 
     }
 
 }
 
+async function sendMessage() {
 
+    const message = input.value.trim();
+
+    if (message === "")
+        return;
+
+    addUserMessage(message);
+
+    input.value = "";
+
+    setAssistantState("thinking");
+
+    showTyping();
+
+    try {
+
+        const answer = await askNayan(message);
+
+        removeTyping();
+
+        addAIMessage(answer);
+
+        setAssistantState("idle");
+
+    }
+    catch (error) {
+
+        console.error(error);
+
+        removeTyping();
+
+        addAIMessage(
+            "Sorry, I could not connect to NAYAN backend."
+        );
+
+        setAssistantState("idle");
+
+    }
+
+}
 
 sendBtn.addEventListener(
     "click",
     sendMessage
 );
 
+micBtn.addEventListener(
+    "click",
+    async () => {
 
+        setAssistantState("listening");
+
+        await window.electronAPI.startVoiceChat();
+
+    }
+);
 
 input.addEventListener(
-    "keypress",
-    function(e){
+    "keydown",
+    function (e) {
 
-        if(e.key === "Enter")
+        if (e.key === "Enter")
             sendMessage();
 
     }
 );
+
+window.electronAPI.onVoiceMessage((data) => {
+
+    // Assistant state updates
+    if (data.role === "state") {
+
+        if (data.text === "thinking") {
+
+            showTyping();
+
+        }
+
+        setAssistantState(data.text);
+
+        return;
+
+    }
+
+    // User speech
+    if (data.role === "user") {
+
+        addUserMessage(data.text);
+
+        return;
+
+    }
+
+    // AI streaming response
+    if (data.role === "assistant") {
+
+        removeTyping();
+
+        addAIMessage(data.text);
+
+        scrollToBottom();
+
+        return;
+
+    }
+
+});
+
+setAssistantState("idle");
