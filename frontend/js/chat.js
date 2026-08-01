@@ -2,22 +2,62 @@ const input = document.getElementById("userInput");
 const sendBtn = document.getElementById("sendBtn");
 const micBtn = document.getElementById("micBtn");
 
-const assistantStatus =
-    document.getElementById("assistantStatus");
+const assistantStatus = document.getElementById("assistantStatus");
+const statusIcon = document.getElementById("statusIcon");
+const statusTitle = document.getElementById("statusTitle");
+const statusSubtitle = document.getElementById("statusSubtitle");
 
-const statusIcon =
-    document.getElementById("statusIcon");
+const welcomeScreen = document.getElementById("welcomeScreen");
 
-const statusTitle =
-    document.getElementById("statusTitle");
+/* =========================================
+   Hide Welcome Screen
+========================================= */
 
-const statusSubtitle =
-    document.getElementById("statusSubtitle");
+function hideWelcomeScreen() {
+
+    if (!welcomeScreen)
+        return;
+
+    if (welcomeScreen.classList.contains("hidden"))
+        return;
+
+    welcomeScreen.classList.add("hidden");
+
+}
+
+/* =========================================
+   Assistant State
+========================================= */
 
 function setAssistantState(state) {
 
+    /* ---------- Future-proof ----------
+       If assistantStatus doesn't exist,
+       simply animate mic button.
+    ----------------------------------- */
+
+    if (!assistantStatus) {
+
+        micBtn.classList.remove(
+            "idle",
+            "listening",
+            "thinking",
+            "speaking"
+        );
+
+        micBtn.classList.add(state);
+
+        return;
+
+    }
+
     assistantStatus.className =
         "assistant-status " + state;
+
+    /* Old UI still supported if present */
+
+    if (!statusIcon || !statusTitle || !statusSubtitle)
+        return;
 
     switch (state) {
 
@@ -54,27 +94,31 @@ function setAssistantState(state) {
 
             break;
 
-        case "idle":
+        default:
 
-            statusIcon.innerHTML = "💤";
+            statusIcon.innerHTML = "✨";
 
             statusTitle.innerHTML = "Ready";
 
             statusSubtitle.innerHTML =
-                "Click the microphone or say Hey Jarvis.";
-
-            break;
+                "Click the microphone or say Hey NAYAN.";
 
     }
 
 }
 
+/* =========================================
+   Send Message
+========================================= */
+
 async function sendMessage() {
 
     const message = input.value.trim();
 
-    if (message === "")
+    if (!message)
         return;
+
+    hideWelcomeScreen();
 
     addUserMessage(message);
 
@@ -92,9 +136,12 @@ async function sendMessage() {
 
         addAIMessage(answer);
 
+        scrollToBottom();
+
         setAssistantState("idle");
 
     }
+
     catch (error) {
 
         console.error(error);
@@ -105,11 +152,17 @@ async function sendMessage() {
             "Sorry, I could not connect to NAYAN backend."
         );
 
+        scrollToBottom();
+
         setAssistantState("idle");
 
     }
 
 }
+
+/* =========================================
+   Button Events
+========================================= */
 
 sendBtn.addEventListener(
     "click",
@@ -119,6 +172,8 @@ sendBtn.addEventListener(
 micBtn.addEventListener(
     "click",
     async () => {
+
+        hideWelcomeScreen();
 
         setAssistantState("listening");
 
@@ -137,9 +192,14 @@ input.addEventListener(
     }
 );
 
+/* =========================================
+   Electron Voice Events
+========================================= */
+
 window.electronAPI.onVoiceMessage((data) => {
 
-    // Assistant state updates
+    /* ---------- Assistant State ---------- */
+
     if (data.role === "state") {
 
         if (data.text === "thinking") {
@@ -154,21 +214,13 @@ window.electronAPI.onVoiceMessage((data) => {
 
     }
 
-    // User speech
+    /* ---------- User Speech ---------- */
+
     if (data.role === "user") {
 
+        hideWelcomeScreen();
+
         addUserMessage(data.text);
-
-        return;
-
-    }
-
-    // AI streaming response
-    if (data.role === "assistant") {
-
-        removeTyping();
-
-        addAIMessage(data.text);
 
         scrollToBottom();
 
@@ -176,6 +228,71 @@ window.electronAPI.onVoiceMessage((data) => {
 
     }
 
+    /* ---------- Assistant Response ---------- */
+
+    if (data.role === "assistant") {
+
+        hideWelcomeScreen();
+
+        removeTyping();
+
+        addAIMessage(data.text);
+
+        scrollToBottom();
+
+        setAssistantState("idle");
+
+        return;
+
+    }
+
 });
 
+/* =========================================
+   Initial State
+========================================= */
+
 setAssistantState("idle");
+
+const startupText =
+document.getElementById("startupText");
+
+const startupOverlay =
+document.getElementById("startupOverlay");
+
+const startupSteps = [
+
+    "Initializing AI...",
+
+    "Loading Voice Engine...",
+
+    "Connecting Knowledge Base...",
+
+    "Preparing Assistant...",
+
+    "Ready"
+
+];
+
+let step = 0;
+
+const interval = setInterval(() => {
+
+    step++;
+
+    if (step < startupSteps.length) {
+
+        startupText.textContent =
+            startupSteps[step];
+
+    }
+
+}, 500);
+
+setTimeout(() => {
+
+    clearInterval(interval);
+
+    startupOverlay.classList.add("hidden");
+
+}, 2500);

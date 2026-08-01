@@ -26,11 +26,19 @@ def start_nayan():
     print("====================\n")
 
     print("Conversation started")
-    print("UI_STATE::listening", flush=True)
 
-    text_to_speech(
-        "Yes, I am listening. How can I help you?"
+    greeting = "Yes, I am listening. How can I help you today?"
+
+    print("UI_STATE::speaking", flush=True)
+
+    print(
+        f"UI_AI::{greeting}",
+        flush=True
     )
+
+    text_to_speech(greeting)
+
+    print("UI_STATE::listening", flush=True)
 
     conversation_start = time.time()
     last_reminder = time.time()
@@ -112,27 +120,40 @@ def start_nayan():
         print(text)
 
         print(f"UI_USER::{text}", flush=True)
-        print("UI_STATE::thinking", flush=True)
 
         conversation_start = time.time()
         last_reminder = time.time()
 
         text_lower = text.lower()
 
+        # -------------------------------
+        # Exit Commands
+        # -------------------------------
         if any(
             command in text_lower
             for command in EXIT_COMMANDS
         ):
 
-            text_to_speech(
-                "Okay, I will wait for you."
-            )
+            farewell = "Okay, I will wait for you."
+
+            # Show farewell in chat
+            print(f"UI_AI::{farewell}", flush=True)
+
+            # Speaking animation
+            print("UI_STATE::speaking", flush=True)
+
+            text_to_speech(farewell)
 
             print("UI_STATE::idle", flush=True)
 
             print("Sleeping...")
 
             break
+
+        # -------------------------------
+        # Normal AI Query
+        # -------------------------------
+        print("UI_STATE::thinking", flush=True)
 
         response = ask_nayan(text)
 
