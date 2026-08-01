@@ -1,0 +1,740 @@
+/* ---------- APP ---------- */
+
+.chat-app{
+
+    width:100vw;
+
+    height:100vh;
+
+    display:flex;
+
+    flex-direction:column;
+
+    overflow:hidden;
+
+}
+
+/* ===========================
+   HEADER
+=========================== */
+
+.app-header{
+
+    height:58px;
+
+    padding:0 30px;
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    background:rgba(255,255,255,.85);
+
+    backdrop-filter:blur(18px);
+
+    border-bottom:1px solid #ECEFF4;
+
+}
+
+.brand h1{
+
+    font-size:22px;
+
+    font-weight:700;
+
+    letter-spacing:-1px;
+
+}
+
+.header-actions{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:14px;
+
+}
+.status-pill{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:8px;
+
+    padding:8px 14px;
+
+    background:white;
+
+    border:1px solid #E5E7EB;
+
+    border-radius:999px;
+
+    font-size:13px;
+
+    color:#4B5563;
+
+}
+.status-dot{
+
+    width:8px;
+
+    height:8px;
+
+    border-radius:50%;
+
+    background:#10B981;
+
+}
+.home-btn{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:8px;
+
+    text-decoration:none;
+
+    padding:10px 16px;
+
+    border-radius:14px;
+
+    color:#374151;
+
+    transition:.25s;
+
+}
+
+.home-btn:hover{
+
+    background:#EFF6FF;
+
+    color:#2563EB;
+
+}
+/* ---------- CHAT AREA ---------- */
+
+.chat-main{
+
+    flex:1;
+
+    display:flex;
+
+    flex-direction:column;
+
+    position:relative;
+
+    overflow:hidden;
+
+}
+
+/* ==============================
+   WELCOME
+============================== */
+
+.welcome-screen{
+    position:absolute;
+    inset:0;
+
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+
+    text-align:center;
+    padding:40px;
+
+    opacity:1;
+    transform:translateY(0);
+
+    transition:
+        opacity .45s ease,
+        transform .45s ease;
+}
+
+.welcome-small{
+
+    color:var(--muted);
+
+    font-size:16px;
+
+    margin-bottom:8px;
+
+}
+
+.welcome-title{
+
+    font-size:72px;
+
+    font-weight:800;
+
+    letter-spacing:-3px;
+
+    color:var(--text);
+
+    margin-bottom:10px;
+
+}
+
+.welcome-tagline{
+
+    font-size:18px;
+
+    color:var(--muted);
+
+    margin-bottom:18px;
+
+}
+
+.welcome-description{
+
+    font-size:22px;
+
+    font-weight:500;
+
+    color:#2563EB;
+
+    margin-bottom:40px;
+
+}
+
+.welcome-features{
+
+    display:flex;
+
+    gap:18px;
+
+    flex-wrap:wrap;
+
+    justify-content:center;
+
+}
+
+.feature-pill{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:10px;
+
+    padding:14px 22px;
+
+    background:white;
+
+    border:1px solid var(--border);
+
+    border-radius:999px;
+
+    box-shadow:0 8px 18px rgba(0,0,0,.05);
+
+    font-size:14px;
+
+    font-weight:500;
+
+    transition:.25s;
+
+}
+
+.feature-pill i{
+
+    color:#2563EB;
+
+}
+
+.feature-pill:hover{
+
+    transform:translateY(-3px);
+
+    box-shadow:0 12px 24px rgba(37,99,235,.12);
+
+}
+
+/* =====================================================
+   CHAT MESSAGES
+===================================================== */
+
+.chat-messages{
+
+    flex:1;
+
+    overflow-y:auto;
+
+    padding:40px 30px;
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:24px;
+
+    scroll-behavior:smooth;
+
+    align-items:center;
+
+}
+.ai-message,
+.user-message{
+
+    width:100%;
+
+    max-width:900px;
+
+    display:flex;
+
+    align-items:flex-end;
+
+    gap:14px;
+
+    animation:messageAppear .28s ease;
+
+}
+/* Hide scrollbar */
+
+.chat-messages::-webkit-scrollbar{
+
+    width:6px;
+
+}
+
+.chat-messages::-webkit-scrollbar-thumb{
+
+    background:#D1D5DB;
+
+    border-radius:20px;
+
+}
+
+/* ========================= */
+
+.user-message{
+
+    justify-content:flex-end;
+
+}
+
+.user-message .message-content{
+
+    border-bottom-right-radius:8px;
+
+}
+.ai-message .message-content{
+
+    border-bottom-left-radius:8px;
+
+}
+
+/* ========================= */
+.message-author{
+
+    font-size:13px;
+
+    font-weight:600;
+
+    color:#2563EB;
+
+    margin-bottom:8px;
+
+    letter-spacing:.3px;
+
+}
+
+.user-message .message-author{
+
+    color:rgba(255,255,255,.9);
+
+}
+
+/* ========================= */
+
+.message-content{
+
+    max-width:620px;
+
+    padding:18px 20px;
+
+    border-radius:22px;
+
+    background:#ffffff;
+
+    border:1px solid #ECEFF4;
+
+    box-shadow:
+        0 8px 20px rgba(15,23,42,.05);
+
+}
+
+/* ========================= */
+
+.user-message .message-content{
+
+    background:linear-gradient(
+        135deg,
+        #2563EB,
+        #1D4ED8
+    );
+
+    color:white;
+
+    border:none;
+
+    box-shadow:
+
+        0 10px 24px rgba(37,99,235,.25);
+
+}
+
+/* ========================= */
+
+.message-content h6{
+
+    margin-bottom:8px;
+
+    font-size:15px;
+
+    font-weight:600;
+
+}
+
+.message-content p{
+
+    line-height:1.7;
+
+    font-size:15px;
+
+}
+
+/* ==========================================
+   INPUT DOCK
+========================================== */
+
+.input-dock{
+
+    padding:20px 32px 28px;
+
+    background:transparent;
+
+}
+
+.input-container{
+
+    max-width:900px;
+
+    margin:auto;
+
+    height:66px;
+
+    display:flex;
+
+    align-items:center;
+
+    gap:14px;
+
+    background:white;
+
+    border:1px solid var(--border);
+
+    border-radius:22px;
+
+    padding:0 14px;
+
+    box-shadow:
+        0 12px 30px rgba(15,23,42,.08);
+
+    transition:.25s;
+
+}
+.input-container:hover{
+
+    transform:translateY(-2px);
+
+}
+.input-container:focus-within{
+
+    border-color:#2563EB;
+
+    box-shadow:
+
+        0 0 0 4px rgba(37,99,235,.12),
+
+        0 18px 40px rgba(37,99,235,.15);
+
+}
+
+/* ---------- INPUT ---------- */
+
+.chat-input{
+
+    flex:1;
+
+    border:none;
+
+    outline:none;
+
+    background:transparent;
+
+    font-size:16px;
+
+    font-family:inherit;
+
+    color:var(--text);
+
+}
+
+.chat-input::placeholder{
+
+    color:#9CA3AF;
+
+}
+
+/* ---------- BUTTONS ---------- */
+
+.dock-btn{
+
+    width:46px;
+
+    height:46px;
+
+    border:none;
+
+    border-radius:14px;
+
+    cursor:pointer;
+
+    transition:.25s;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    font-size:18px;
+
+}
+
+/* ---------- MIC ---------- */
+
+.mic-btn{
+    background:#EFF6FF;
+    color:#2563EB;
+
+    position:relative;
+    overflow:visible;
+}
+
+.mic-btn:hover{
+
+    background:#DBEAFE;
+
+    transform:scale(1.05);
+
+}
+
+/* ---------- SEND ---------- */
+
+.send-btn{
+
+    background:linear-gradient(
+        135deg,
+        #2563EB,
+        #06B6D4
+    );
+
+    color:white;
+
+}
+
+.send-btn:hover{
+
+    transform:translateY(-2px);
+
+    box-shadow:
+        0 10px 22px rgba(37,99,235,.30);
+
+}
+/* ==========================
+   WELCOME TRANSITION
+========================== */
+
+
+.welcome-screen.hidden{
+
+    opacity:0;
+
+    transform:translateY(-40px) scale(.98);
+
+    pointer-events:none;
+
+    visibility:hidden;
+
+}
+/* ==========================
+   MESSAGE ANIMATIONS
+========================== */
+
+
+@keyframes messageAppear{
+
+    from{
+
+        opacity:0;
+        transform:translateY(12px);
+
+    }
+
+    to{
+
+        opacity:1;
+        transform:translateY(0);
+
+    }
+
+}
+/* ==========================
+   Accessibility
+========================== */
+
+.visually-hidden{
+
+    position:absolute;
+
+    width:1px;
+
+    height:1px;
+
+    padding:0;
+
+    margin:-1px;
+
+    overflow:hidden;
+
+    clip:rect(0,0,0,0);
+
+    white-space:nowrap;
+
+    border:0;
+
+}
+/* ==========================
+   MIC STATES
+========================== */
+
+
+.mic-btn.idle{
+
+    animation:idleGlow 3s infinite ease-in-out;
+
+}
+
+.mic-btn.listening{
+
+    animation:listeningPulse 1.2s infinite;
+
+}
+
+.mic-btn.thinking{
+
+    animation:thinkingGlow 1.5s infinite ease-in-out;
+
+}
+
+.mic-btn.speaking{
+
+    animation:speakingWave .9s infinite;
+
+}
+
+/* ---------- Idle ---------- */
+
+@keyframes idleGlow{
+
+    0%,100%{
+
+        box-shadow:0 0 0 rgba(37,99,235,0);
+
+    }
+
+    50%{
+
+        box-shadow:0 0 18px rgba(37,99,235,.18);
+
+    }
+
+}
+
+/* ---------- Listening ---------- */
+
+@keyframes listeningPulse{
+
+    0%{
+
+        transform:scale(1);
+
+        box-shadow:0 0 0 0 rgba(6,182,212,.45);
+
+    }
+
+    70%{
+
+        transform:scale(1.08);
+
+        box-shadow:0 0 0 16px rgba(6,182,212,0);
+
+    }
+
+    100%{
+
+        transform:scale(1);
+
+        box-shadow:0 0 0 0 rgba(6,182,212,0);
+
+    }
+
+}
+
+/* ---------- Thinking ---------- */
+
+@keyframes thinkingGlow{
+
+    0%,100%{
+
+        background:#2563EB;
+
+    }
+
+    50%{
+
+        background:#7C3AED;
+
+    }
+
+}
+
+/* ---------- Speaking ---------- */
+
+@keyframes speakingWave{
+
+    0%{
+
+        transform:scale(1);
+
+    }
+
+    50%{
+
+        transform:scale(1.1);
+
+    }
+
+    100%{
+
+        transform:scale(1);
+
+    }
+
+}
