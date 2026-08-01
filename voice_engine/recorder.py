@@ -8,7 +8,7 @@ SAMPLE_RATE = 16000
 CHANNELS = 1
 
 SILENCE_THRESHOLD = 0.005
-SILENCE_DURATION = 3
+SILENCE_DURATION = 1.5
 MAX_RECORD_TIME = 20
 
 
@@ -19,6 +19,7 @@ def record_audio(filename="user_input.wav"):
     audio_data = []
 
     silence_start = None
+    speech_started = False
     start_time = time.time()
 
 
@@ -50,18 +51,18 @@ def record_audio(filename="user_input.wav"):
                 volume = np.linalg.norm(audio_data[-1])
 
 
-                if volume < SILENCE_THRESHOLD:
+                if volume > SILENCE_THRESHOLD:
+
+                    speech_started = True
+                    silence_start = None
+
+                elif speech_started:
 
                     if silence_start is None:
                         silence_start = time.time()
 
-
                     elif time.time() - silence_start > SILENCE_DURATION:
                         break
-
-                else:
-                    silence_start = None
-
 
     if len(audio_data) == 0:
         return None
