@@ -132,8 +132,9 @@ function createWindow() {
 
     win = new BrowserWindow({
 
-        width: 1200,
-        height: 800,
+        width: 1400,
+        height: 900,
+        show: false,
 
         webPreferences: {
 
@@ -166,6 +167,11 @@ function createWindow() {
         );
 
     }
+    win.maximize();
+
+    win.show();
+
+    win.focus();
 
 }
 
