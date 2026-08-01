@@ -78,14 +78,15 @@ function startVoiceEngine() {
                 // UI state
                 else if (line.startsWith("UI_STATE::")) {
 
+                    const state = line.replace("UI_STATE::", "").trim();
+
+                    console.log("STATE FROM PYTHON:", state);
+
                     win.webContents.send(
                         "voice-message",
                         {
                             role: "state",
-                            text: line.replace(
-                                "UI_STATE::",
-                                ""
-                            )
+                            text: state
                         }
                     );
 
@@ -273,6 +274,76 @@ ipcMain.handle(
             process.on(
                 "close",
                 () => resolve(true)
+            );
+
+        });
+
+    }
+);
+
+ipcMain.handle(
+    "speak-text",
+    async (event, text) => {
+
+        return new Promise((resolve) => {
+
+            console.log("Speak requested:", text);
+
+            win.webContents.send(
+                "voice-message",
+                {
+                    role: "state",
+                    text: "speaking"
+                }
+            );
+
+            const pythonPath = path.join(
+                __dirname,
+                "../voice_engine/venv/Scripts/python.exe"
+            );
+
+            console.log("Python:", pythonPath);
+
+            const script = path.join(
+                __dirname,
+                "../voice_engine/speak.py"
+            );
+
+            console.log("Script:", script);
+
+            const process = spawn(
+                pythonPath,
+                [script, text],
+                {
+                    windowsHide: true
+                }
+            );
+
+            process.stdout.on("data", (data) => {
+                console.log("SPEAK:", data.toString());
+            });
+
+            process.stderr.on("data", (data) => {
+                console.error("SPEAK ERROR:", data.toString());
+            });
+
+            process.on(
+                "close",
+                (code) => {
+
+                    console.log("Speak process exited:", code);
+
+                    win.webContents.send(
+                        "voice-message",
+                        {
+                            role: "state",
+                            text: "idle"
+                        }
+                    );
+
+                    resolve(true);
+
+                }
             );
 
         });

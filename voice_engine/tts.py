@@ -3,6 +3,7 @@ import sounddevice as sd
 import soundfile as sf
 import os
 import re
+import sys
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
@@ -36,6 +37,8 @@ def text_to_speech(text):
 
 
     command = [
+        sys.executable,
+        "-m",
         "piper",
         "--model",
         MODEL,

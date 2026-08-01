@@ -23,7 +23,7 @@ function addUserMessage(text) {
 function addAIMessage(text) {
 
     const chat = document.getElementById("chatMessages");
-
+    const messageId = "msg_" + Date.now();
     chat.innerHTML += `
     <div class="ai-message">
 
@@ -35,7 +35,31 @@ function addAIMessage(text) {
 
             <h6>NAYAN</h6>
 
-            <p>${text}</p>
+            <p id="${messageId}">${text}</p>
+
+            <div class="message-actions">
+
+                <button
+                    class="action-btn listen-btn"
+                    onclick="listenResponse(this)">
+
+                    <i class="bi bi-volume-up"></i>
+
+                    Listen
+
+                </button>
+
+                <button class="action-btn copy-btn" onclick="copyMessage('${messageId}', this)">
+
+                <button class="action-icon">
+                    <i class="bi bi-hand-thumbs-up"></i>
+                </button>
+
+                <button class="action-icon">
+                    <i class="bi bi-hand-thumbs-down"></i>
+                </button>
+
+            </div>
 
         </div>
 
@@ -43,6 +67,26 @@ function addAIMessage(text) {
     `;
 
     scrollToBottom();
+
+}
+function copyMessage(messageId, button) {
+
+    const text = document.getElementById(messageId).innerText;
+
+    navigator.clipboard.writeText(text);
+
+    const original = button.innerHTML;
+
+    button.innerHTML = `
+        <i class="bi bi-check2"></i>
+        Copied
+    `;
+
+    setTimeout(() => {
+
+        button.innerHTML = original;
+
+    }, 1500);
 
 }
 
@@ -111,5 +155,25 @@ function scrollToBottom() {
         behavior: "smooth"
 
     });
+
+}
+async function listenResponse(button) {
+
+    const message = button
+        .closest(".message-content")
+        .querySelector("p")
+        .innerText;
+
+    button.disabled = true;
+
+    button.innerHTML =
+        `<i class="bi bi-volume-up-fill"></i> Speaking...`;
+
+    await window.electronAPI.speakText(message);
+
+    button.disabled = false;
+
+    button.innerHTML =
+        `<i class="bi bi-volume-up"></i> Listen`;
 
 }
