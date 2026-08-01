@@ -31,6 +31,9 @@ contextBridge.exposeInMainWorld(
         startVoiceChat: () =>
             ipcRenderer.invoke("start-voice-chat"),
 
+        speakText: (text) =>
+            ipcRenderer.invoke("speak-text", text),
+
         onVoiceMessage(callback) {
 
             ipcRenderer.on(

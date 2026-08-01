@@ -77,6 +77,10 @@
 
     color:#4B5563;
 
+    transition:.25s ease;
+    min-width:140px;
+    justify-content:center;
+
 }
 .status-dot{
 
@@ -736,5 +740,88 @@
         transform:scale(1);
 
     }
+
+}
+/* ==========================
+MESSAGE ACTIONS
+========================== */
+
+.message-actions{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:8px;
+
+    margin-top:14px;
+
+}
+
+.action-btn{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:6px;
+
+    border:none;
+
+    background:transparent;
+
+    color:#6B7280;
+
+    font-size:13px;
+
+    padding:6px 10px;
+
+    border-radius:10px;
+
+    cursor:pointer;
+
+    transition:.2s ease;
+
+}
+
+.action-btn:hover{
+
+    background:#F3F4F6;
+
+    color:#111827;
+
+}
+
+.action-icon{
+
+    width:34px;
+
+    height:34px;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    border:none;
+
+    background:transparent;
+
+    color:#6B7280;
+
+    border-radius:10px;
+
+    cursor:pointer;
+
+    transition:.2s ease;
+
+}
+
+.action-icon:hover{
+
+    background:#F3F4F6;
+
+    color:#111827;
 
 }

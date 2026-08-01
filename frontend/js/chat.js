@@ -6,6 +6,8 @@ const assistantStatus = document.getElementById("assistantStatus");
 const statusIcon = document.getElementById("statusIcon");
 const statusTitle = document.getElementById("statusTitle");
 const statusSubtitle = document.getElementById("statusSubtitle");
+const statusText = document.getElementById("statusText");
+const statusDot = document.getElementById("statusDot");
 
 const welcomeScreen = document.getElementById("welcomeScreen");
 
@@ -31,77 +33,53 @@ function hideWelcomeScreen() {
 
 function setAssistantState(state) {
 
-    /* ---------- Future-proof ----------
-       If assistantStatus doesn't exist,
-       simply animate mic button.
-    ----------------------------------- */
+    micBtn.classList.remove(
+        "idle",
+        "listening",
+        "thinking",
+        "speaking"
+    );
 
-    if (!assistantStatus) {
+    micBtn.classList.add(state);
 
-        micBtn.classList.remove(
-            "idle",
-            "listening",
-            "thinking",
-            "speaking"
-        );
-
-        micBtn.classList.add(state);
-
-        return;
-
-    }
-
-    assistantStatus.className =
-        "assistant-status " + state;
-
-    /* Old UI still supported if present */
-
-    if (!statusIcon || !statusTitle || !statusSubtitle)
+    if (!statusText || !statusDot)
         return;
 
     switch (state) {
 
         case "listening":
 
-            statusIcon.innerHTML = "🎤";
-
-            statusTitle.innerHTML = "Listening...";
-
-            statusSubtitle.innerHTML =
-                "I'm ready for your question.";
+            statusText.textContent = "Listening";
+            statusDot.style.background = "#06B6D4";
 
             break;
 
         case "thinking":
 
-            statusIcon.innerHTML = "🧠";
-
-            statusTitle.innerHTML = "Thinking...";
-
-            statusSubtitle.innerHTML =
-                "Let me find the best answer.";
+            statusText.textContent = "Thinking";
+            statusDot.style.background = "#F59E0B";
 
             break;
 
         case "speaking":
 
-            statusIcon.innerHTML = "🔊";
+            statusText.textContent = "Speaking";
+            statusDot.style.background = "#8B5CF6";
 
-            statusTitle.innerHTML = "Speaking...";
+            break;
 
-            statusSubtitle.innerHTML =
-                "Here's what I found.";
+        case "starting":
+
+            statusDot.className = "status-dot starting";
+
+            statusText.textContent = "Preparing microphone...";
 
             break;
 
         default:
 
-            statusIcon.innerHTML = "✨";
-
-            statusTitle.innerHTML = "Ready";
-
-            statusSubtitle.innerHTML =
-                "Click the microphone or say Hey NAYAN.";
+            statusText.textContent = "Ready";
+            statusDot.style.background = "#10B981";
 
     }
 
@@ -175,7 +153,7 @@ micBtn.addEventListener(
 
         hideWelcomeScreen();
 
-        setAssistantState("listening");
+        setAssistantState("starting");
 
         await window.electronAPI.startVoiceChat();
 
@@ -240,8 +218,6 @@ window.electronAPI.onVoiceMessage((data) => {
 
         scrollToBottom();
 
-        setAssistantState("idle");
-
         return;
 
     }
@@ -254,45 +230,3 @@ window.electronAPI.onVoiceMessage((data) => {
 
 setAssistantState("idle");
 
-const startupText =
-document.getElementById("startupText");
-
-const startupOverlay =
-document.getElementById("startupOverlay");
-
-const startupSteps = [
-
-    "Initializing AI...",
-
-    "Loading Voice Engine...",
-
-    "Connecting Knowledge Base...",
-
-    "Preparing Assistant...",
-
-    "Ready"
-
-];
-
-let step = 0;
-
-const interval = setInterval(() => {
-
-    step++;
-
-    if (step < startupSteps.length) {
-
-        startupText.textContent =
-            startupSteps[step];
-
-    }
-
-}, 500);
-
-setTimeout(() => {
-
-    clearInterval(interval);
-
-    startupOverlay.classList.add("hidden");
-
-}, 2500);
