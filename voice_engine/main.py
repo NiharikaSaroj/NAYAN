@@ -5,7 +5,7 @@ from stt import speech_to_text
 from tts import text_to_speech
 from api_client import ask_nayan
 
-EXIT_COMMANDS = [
+EXIT_COMMANDS = {
     "stop",
     "sleep",
     "exit",
@@ -13,13 +13,43 @@ EXIT_COMMANDS = [
     "go to sleep",
     "good bye",
     "goodbye"
-]
+}
+
+REPEAT_COMMANDS = {
+    "repeat",
+    "repeat again",
+    "repeat that",
+    "repeat it",
+    "listen again",
+    "say it again",
+    "can you repeat",
+    "could you repeat",
+    "please repeat"
+}
+
+NOISE_WORDS = {
+    "thank",
+    "thanks",
+    "thank you",
+    "okay",
+    "ok",
+    "hmm",
+    "uh",
+    "yes"
+}
 
 MAX_IDLE_TIME = 60
 REMINDER_INTERVAL = 30
 
+LAST_RESPONSE = None
+
+
+def reset_idle_timer():
+    return time.time(), False
+
 
 def start_nayan():
+    global LAST_RESPONSE
 
     print("\n====================")
     print("NAYAN Voice Assistant")
@@ -30,90 +60,78 @@ def start_nayan():
     greeting = "Yes, I am listening. How can I help you today?"
 
     print("UI_STATE::speaking", flush=True)
-
-    print(
-        f"UI_AI::{greeting}",
-        flush=True
-    )
+    print(f"UI_AI::{greeting}", flush=True)
 
     text_to_speech(greeting)
 
-    print("UI_STATE::listening", flush=True)
+    print("UI_STATE::idle", flush=True)
 
-    conversation_start = time.time()
-    last_reminder = time.time()
+    time.sleep(1)
+
+    conversation_start, reminder_sent = reset_idle_timer()
 
     while True:
 
         current_time = time.time()
         idle_time = current_time - conversation_start
 
-        # Reminder after 30 seconds
-        if (
-            current_time - last_reminder >= REMINDER_INTERVAL
-            and idle_time < MAX_IDLE_TIME
-        ):
+        # ---------------------------------
+        # 30 second reminder
+        # ---------------------------------
 
-            text_to_speech(
-                "Are you still there?"
-            )
+        if idle_time >= REMINDER_INTERVAL and not reminder_sent:
 
-            print("Reminder sent")
+            reminder = "Are you still there?"
 
-            last_reminder = current_time
+            print(f"UI_AI::{reminder}", flush=True)
+            print("UI_STATE::speaking", flush=True)
 
-        # Sleep after 60 seconds
-        if idle_time >= MAX_IDLE_TIME:
-
-            text_to_speech(
-                "I am going to sleep now. Call me again when you need me."
-            )
+            text_to_speech(reminder)
 
             print("UI_STATE::idle", flush=True)
+
+            reminder_sent = True
+
+            conversation_start = time.time()
+
+        # ---------------------------------
+        # 60 second timeout
+        # ---------------------------------
+
+        if idle_time >= MAX_IDLE_TIME:
+
+            goodbye = "I am going to sleep now. Call me again when you need me."
+
+            print(f"UI_AI::{goodbye}", flush=True)
+            print("UI_STATE::speaking", flush=True)
+
+            text_to_speech(goodbye)
+
+            print("UI_STATE::shutdown", flush=True)
 
             print("Conversation ended")
 
             break
 
+        # ---------------------------------
+        # Listening
+        # ---------------------------------
+
         print("UI_STATE::listening", flush=True)
 
-        audio_file = record_audio(
-            filename="user_input.wav"
-        )
+        audio_file = record_audio("user_input.wav")
 
         if audio_file is None:
-
-            print("No speech detected...")
-
             continue
 
         text = speech_to_text(audio_file)
 
-        if not text or len(text.strip()) < 3:
-
-            print("Invalid speech detected")
-
+        if not text:
             continue
 
-        noise_words = [
+        text = text.strip()
 
-            "thank you",
-            "thanks",
-            "thank",
-            "bye",
-            "goodbye",
-            "okay",
-            "ok",
-            "hmm",
-            "uh",
-            "yes"
-
-        ]
-
-        if text.lower().strip() in noise_words:
-
-            print("Ignoring possible hallucination")
-
+        if len(text) < 3:
             continue
 
         print("\nUser said:")
@@ -121,41 +139,88 @@ def start_nayan():
 
         print(f"UI_USER::{text}", flush=True)
 
-        conversation_start = time.time()
-        last_reminder = time.time()
+        clean_text = text.lower().strip(".,!? ")
 
-        text_lower = text.lower()
+        # User spoke → reset timer
+        conversation_start, reminder_sent = reset_idle_timer()
 
-        # -------------------------------
-        # Exit Commands
-        # -------------------------------
-        if any(
-            command in text_lower
-            for command in EXIT_COMMANDS
-        ):
+        # ---------------------------------
+        # Ignore hallucinations
+        # ---------------------------------
+
+        if clean_text in NOISE_WORDS:
+            print("Ignoring possible hallucination")
+            continue
+
+        # ---------------------------------
+        # Repeat
+        # ---------------------------------
+
+        if clean_text in REPEAT_COMMANDS:
+
+            if LAST_RESPONSE:
+
+                ui_response = (
+                    LAST_RESPONSE
+                    .replace("&", "&amp;")
+                    .replace("<", "&lt;")
+                    .replace(">", "&gt;")
+                    .replace("\n", "<br>")
+                )
+
+                print(f"UI_AI::{ui_response}", flush=True)
+                print("UI_STATE::speaking", flush=True)
+
+                text_to_speech(LAST_RESPONSE)
+
+            else:
+
+                message = "There is no previous answer to repeat."
+
+                print(f"UI_AI::{message}", flush=True)
+                print("UI_STATE::speaking", flush=True)
+
+                text_to_speech(message)
+
+            print("UI_STATE::idle", flush=True)
+
+            time.sleep(1)
+
+            conversation_start, reminder_sent = reset_idle_timer()
+
+            continue
+
+        # ---------------------------------
+        # Exit
+        # ---------------------------------
+
+        if clean_text in EXIT_COMMANDS:
 
             farewell = "Okay, I will wait for you."
 
-            # Show farewell in chat
             print(f"UI_AI::{farewell}", flush=True)
-
-            # Speaking animation
             print("UI_STATE::speaking", flush=True)
 
             text_to_speech(farewell)
 
-            print("UI_STATE::idle", flush=True)
+            print("UI_STATE::shutdown", flush=True)
 
-            print("Sleeping...")
+            print("Conversation ended")
 
             break
 
-        # -------------------------------
-        # Normal AI Query
-        # -------------------------------
+        # ---------------------------------
+        # Thinking
+        # ---------------------------------
+
         print("UI_STATE::thinking", flush=True)
 
         response = ask_nayan(text)
+
+        if not response:
+            response = "Sorry, I couldn't generate a response."
+
+        LAST_RESPONSE = response
 
         print("\nNAYAN:")
         print(response)
@@ -168,26 +233,19 @@ def start_nayan():
             .replace("\n", "<br>")
         )
 
-        print("UI_STATE::speaking", flush=True)
+        print(f"UI_AI::{ui_response}", flush=True)
 
-        print(
-            f"UI_AI::{ui_response}",
-            flush=True
-        )
+        print("UI_STATE::speaking", flush=True)
 
         text_to_speech(response)
 
         print("UI_STATE::idle", flush=True)
 
-        
-
-        # Small pause to avoid hearing its own voice
         time.sleep(1.2)
 
-        conversation_start = time.time()
-        last_reminder = time.time()
+        # Start silence timer AFTER speaking
+        conversation_start, reminder_sent = reset_idle_timer()
 
 
 if __name__ == "__main__":
-
     start_nayan()

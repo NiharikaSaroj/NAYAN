@@ -90,6 +90,21 @@ function startVoiceEngine() {
                         }
                     );
 
+                    // Python is asking Electron to close
+                    if (state === "shutdown") {
+
+                        console.log("Shutdown requested by voice engine");
+
+                        if (voiceProcess) {
+                            voiceProcess.kill();
+                            voiceProcess = null;
+                        }
+
+                        if (win && !win.isDestroyed()) {
+                            win.close();
+                        }
+                    }
+
                 }
 
                 // Normal debug output
@@ -123,6 +138,8 @@ function startVoiceEngine() {
             console.log(
                 `Voice engine stopped with code ${code}`
             );
+
+            voiceProcess = null;
 
         }
     );
@@ -178,20 +195,18 @@ function createWindow() {
 
 app.whenReady().then(createWindow);
 
-app.on(
-    "window-all-closed",
-    () => {
+app.on("window-all-closed", () => {
 
-        if (voiceProcess) {
-            voiceProcess.kill();
-        }
+    console.log("Electron window closed");
 
-        if (process.platform !== "darwin") {
-            app.quit();
-        }
-
+    if (voiceProcess) {
+        voiceProcess.kill();
+        voiceProcess = null;
     }
-);
+
+    app.quit();
+
+});
 ipcMain.handle(
     "start-voice-chat",
     async () => {
